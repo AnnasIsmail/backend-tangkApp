@@ -19,7 +19,7 @@ const SECRET_KEY = "TangkApp";
 // Endpoint untuk menyimpan data berkas
 router.post("/insert", async (req, res) => {
   try {
-    const {
+    let {
       idBerkas,
       noBerkas,
       tahunBerkas,
@@ -44,12 +44,26 @@ router.post("/insert", async (req, res) => {
       statusBayarPNBP,
       idUser,
       PIC,
+      pemohonBaru
     } = req.body;
 
     // Validasi jumlah PIC
     if (PIC && PIC.length > 2) {
       return res.status(400).json({ error: "Maksimal 2 PIC diperbolehkan." });
     }
+
+    if (pemohonBaru) {
+      const newPemohon = new Pemohon({
+        namaPemohon,
+        dateIn: new Date().toISOString(),
+      });
+    
+      const savedPemohon = await newPemohon.save();
+      idPemohon = savedPemohon._id.toString(); // Update idPemohon
+      console.log(idPemohon);
+    }
+    
+    
 
     // Buat instance baru
     const newBerkas = new Berkas({
