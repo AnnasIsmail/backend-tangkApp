@@ -62,8 +62,6 @@ router.post("/insert", async (req, res) => {
       idPemohon = savedPemohon._id.toString(); // Update idPemohon
       console.log(idPemohon);
     }
-    
-    
 
     // Buat instance baru
     const newBerkas = new Berkas({
@@ -404,8 +402,24 @@ router.post("/filter", async (req, res) => {
   }
 });
 
+// Contoh di Express.js
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    // Langsung berikan id ke findByIdAndDelete
+    const deletedBerkas = await Berkas.findByIdAndDelete(id);
 
+    if (!deletedBerkas) {
+      // Jika tidak ditemukan, kirim respons 404
+      return res.status(404).json({ message: "Berkas tidak ditemukan." });
+    }
 
+    res.status(200).json({ message: "Berkas berhasil dihapus." });
+  } catch (error) {
+    console.error("Error saat menghapus berkas:", error);
+    res.status(500).json({ message: "Terjadi kesalahan saat menghapus berkas." });
+  }
+});
 
 
 module.exports = router;
