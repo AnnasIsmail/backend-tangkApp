@@ -89,11 +89,11 @@ router.get("/check-token", async (req, res) => {
       return res.status(403).json({ error: "Token telah kedaluwarsa." });
     }
 
-    const user = await users.findById(decoded._id).select("_id nama role");
+    const user = await users.findById(decoded._id).select("_id nama role NIK");
     if (!user) {
       return res.status(404).json({ error: "User tidak ditemukan." });
     }
-
+    
     res.json({ user });
   } catch (error) {
     res.status(500).json({ error: "Kesalahan server saat memverifikasi token." });

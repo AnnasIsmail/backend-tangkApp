@@ -421,63 +421,65 @@ router.delete('/:id', async (req, res) => {
 });
 
 
-router.post('/:id/selesai', async (req, res) => {
-    const { id } = req.params;
+// router.post('/:id/selesai', async (req, res) => {
+//     const { id, userIn, NIK, namaUser } = req.params;
 
-    try {
-        const berkas = await Berkas.findById(id);
-        if (!berkas) {
-            return res.status(404).json({ message: 'Berkas tidak ditemukan' });
-        }
+//     try {
+//         const berkas = await Berkas.findById(id);
+//         if (!berkas) {
+//             return res.status(404).json({ message: 'Berkas tidak ditemukan' });
+//         }
 
-        // Cari status aktif
-        const currentStatus = berkas.status.find(s => s.subStatus === 'Berjalan');
-        if (!currentStatus) {
-            return res.status(400).json({ message: 'Tidak ada status aktif!' });
-        }
+//         // Cari status aktif
+//         const currentStatus = berkas.status.find(s => s.subStatus === 'Berjalan');
+//         if (!currentStatus) {
+//             return res.status(400).json({ message: 'Tidak ada status aktif!' });
+//         }
 
-        // Cari status berikutnya dari koleksi Status
-        const currentStatusIndex = await Status.findOne({ nama: currentStatus.name });
-        if (!currentStatusIndex) {
-            return res.status(400).json({ message: 'Status tidak valid di koleksi Status!' });
-        }
+//         // Cari status berikutnya dari koleksi Status
+//         const currentStatusIndex = await Status.findOne({ nama: currentStatus.name });
+//         if (!currentStatusIndex) {
+//             return res.status(400).json({ message: 'Status tidak valid di koleksi Status!' });
+//         }
 
-        const nextStatus = await Status.findOne({ indexStatus: currentStatusIndex.indexStatus + 1 });
+//         const nextStatus = await Status.findOne({ indexStatus: currentStatusIndex.indexStatus + 1 });
 
-        // Tambahkan substatus "Selesai" ke status aktif
-        currentStatus.statusDetail.push({
-            nama: 'Selesai',
-            dateIn: new Date(),
-            dateUp: ""
-        });
+//         // Tambahkan substatus "Selesai" ke status aktif
+//         currentStatus.statusDetail.push({
+//             nama: 'Selesai',
+//             dateIn: new Date(),
+//             dateUp: "",
+//             userIn, NIK, namaUser
+//         });
 
-        // Tambahkan status baru jika ada status berikutnya
-        if (nextStatus) {
-            berkas.status.push({
-                name: nextStatus.nama,
-                subStatus: 'Berjalan',
-                dateIn: new Date(),
-                dateUp: "",
-                statusDetail: [
-                    {
-                        nama: 'Berjalan',
-                        dateIn: new Date(),
-                        dateUp: ""
-                    }
-                ]
-            });
-        }
+//         // Tambahkan status baru jika ada status berikutnya
+//         if (nextStatus) {
+//             berkas.status.push({
+//                 name: nextStatus.nama,
+//                 subStatus: 'Berjalan',
+//                 dateIn: new Date(),
+//                 dateUp: "",
+//                 statusDetail: [
+//                     {
+//                         nama: 'Berjalan',
+//                         dateIn: new Date(),
+//                         dateUp: ""
+//                     }
+//                 ]
+//             });
+//         }
 
-        await berkas.save();
+//         await berkas.save();
 
-        res.status(200).json({ message: 'Status berhasil diperbarui!', berkas });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+//         res.status(200).json({ message: 'Status berhasil diperbarui!', berkas });
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// });
 
 router.post('/updateStatus/:id/selesai', async (req, res) => {
   const { id } = req.params;
+  const { userIn, NIK, namaUser, notes } = req.body;
 
   try {
     const berkas = await Berkas.findById(id);
@@ -487,14 +489,16 @@ router.post('/updateStatus/:id/selesai', async (req, res) => {
 
     // Ambil status terakhir
     const currentStatus = berkas.status[berkas.status.length - 1];
-    if (!currentStatus || currentStatus.subStatus !== "Berjalan") {
-      return res.status(400).json({ message: "Tidak ada status aktif yang berjalan!" });
-    }
+    // if (!currentStatus || currentStatus.subStatus !== "Berjalan") {
+    //   return res.status(400).json({ message: "Tidak ada status aktif yang berjalan!" });
+    // }
 
     // Tambahkan substatus "Selesai"
     currentStatus.statusDetail.push({
-      nama: "Selesai",
-      dateIn: new Date(),
+        nama: 'Selesai',
+        dateIn: new Date(),
+        dateUp: "",
+        userIn, NIK, namaUser, notes
     });
     currentStatus.subStatus = "Selesai";
 

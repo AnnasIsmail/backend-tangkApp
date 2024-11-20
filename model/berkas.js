@@ -6,11 +6,27 @@ const subStatusSchema = mongoose.Schema({
     type: String,
     
   },
+  userIn: {
+    type: String,
+    default: "",
+  },
+  NIK: {
+    type: String,
+    default: "",
+  },
+  namaUser: {
+    type: String,
+    default: "",
+  },
   dateIn: {
     type: String,
     default: "",
   },
   dateUp: {
+    type: String,
+    default: "",
+  },
+  notes: {
     type: String,
     default: "",
   },
