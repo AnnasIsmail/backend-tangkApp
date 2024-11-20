@@ -1,11 +1,6 @@
 const mongoose = require("mongoose");
 
 const petugasUkurSchema = new mongoose.Schema({
-  idPetugasUkur: {
-    type: String,
-    required: true,
-    unique: true,
-  },
   NIK: {
     type: Number,
     required: true,
@@ -14,6 +9,14 @@ const petugasUkurSchema = new mongoose.Schema({
   nama: {
     type: String,
     required: true,
+  },
+  dateIn: {
+    type: Date,
+    default: Date.now, 
+  },
+  dateUp: {
+    type: Date,
+    default: null, 
   },
 });
 

@@ -61,7 +61,6 @@ router.post("/insert", async (req, res) => {
     
       const savedPemohon = await newPemohon.save();
       idPemohon = savedPemohon._id.toString(); // Update idPemohon
-      console.log(idPemohon);
     }
 
     // Buat instance baru
@@ -282,7 +281,6 @@ router.post("/", async (req, res) => {
     }
 
     let data;
-    console.log(role)
     if (role === "Admin") {
       // Admin dapat melihat semua dokumen
       data = await Berkas.find();

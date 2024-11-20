@@ -20,6 +20,7 @@ router.post("/login", async (req, res) => {
   try {
     // Cari pengguna berdasarkan NIK
     const user = await users.findOne({ NIK });
+    
     if (!user) {
       return res.status(404).json({ error: "User tidak ditemukan." });
     }
