@@ -48,6 +48,11 @@ router.post("/insert", async (req, res) => {
       pemohonBaru
     } = req.body;
 
+    const existingBerkas = await Berkas.findOne({ idBerkas });
+    if (existingBerkas) {
+      return res.status(400).json({ error: "Nomor Berkas sudah didaftarkan sebelumnya." });
+    }
+
     // Validasi jumlah PIC
     if (PIC && PIC.length > 2) {
       return res.status(400).json({ error: "Maksimal 2 PIC diperbolehkan." });
@@ -420,62 +425,6 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-
-// router.post('/:id/selesai', async (req, res) => {
-//     const { id, userIn, NIK, namaUser } = req.params;
-
-//     try {
-//         const berkas = await Berkas.findById(id);
-//         if (!berkas) {
-//             return res.status(404).json({ message: 'Berkas tidak ditemukan' });
-//         }
-
-//         // Cari status aktif
-//         const currentStatus = berkas.status.find(s => s.subStatus === 'Berjalan');
-//         if (!currentStatus) {
-//             return res.status(400).json({ message: 'Tidak ada status aktif!' });
-//         }
-
-//         // Cari status berikutnya dari koleksi Status
-//         const currentStatusIndex = await Status.findOne({ nama: currentStatus.name });
-//         if (!currentStatusIndex) {
-//             return res.status(400).json({ message: 'Status tidak valid di koleksi Status!' });
-//         }
-
-//         const nextStatus = await Status.findOne({ indexStatus: currentStatusIndex.indexStatus + 1 });
-
-//         // Tambahkan substatus "Selesai" ke status aktif
-//         currentStatus.statusDetail.push({
-//             nama: 'Selesai',
-//             dateIn: new Date(),
-//             dateUp: "",
-//             userIn, NIK, namaUser
-//         });
-
-//         // Tambahkan status baru jika ada status berikutnya
-//         if (nextStatus) {
-//             berkas.status.push({
-//                 name: nextStatus.nama,
-//                 subStatus: 'Berjalan',
-//                 dateIn: new Date(),
-//                 dateUp: "",
-//                 statusDetail: [
-//                     {
-//                         nama: 'Berjalan',
-//                         dateIn: new Date(),
-//                         dateUp: ""
-//                     }
-//                 ]
-//             });
-//         }
-
-//         await berkas.save();
-
-//         res.status(200).json({ message: 'Status berhasil diperbarui!', berkas });
-//     } catch (error) {
-//         res.status(500).json({ message: error.message });
-//     }
-// });
 
 router.post('/updateStatus/:id/selesai', async (req, res) => {
   const { id } = req.params;
