@@ -12,6 +12,7 @@ const mongoose = require("mongoose");
 const userRoutes = require("./routes/userRoutes");
 const berkasRoutes = require("./routes/berkasRoutes");
 const petugasUkurRoutes = require("./routes/petugasUkurRoutes");
+const petugasSPSRoutes = require("./routes/petugasSPSRoutes");
 // const VPSRoutes = require("./routes/VPS");
 // const lambdaRoutes = require("./routes/lambda");
 
@@ -103,3 +104,4 @@ mongoose.connection.on('error', (err) => {
 app.use("/user", userRoutes);
 app.use("/berkas", berkasRoutes);
 app.use("/petugas-ukur", petugasUkurRoutes);
+app.use("/petugas-sps", petugasSPSRoutes);

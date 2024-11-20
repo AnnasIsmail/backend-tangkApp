@@ -93,7 +93,7 @@ router.get("/check-token", async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User tidak ditemukan." });
     }
-    
+
     res.json({ user });
   } catch (error) {
     res.status(500).json({ error: "Kesalahan server saat memverifikasi token." });
@@ -120,6 +120,109 @@ router.post("/logout", async (req, res) => {
     res.status(200).json({ message: "Logout berhasil. Token telah dihapus." });
   } catch (error) {
     res.status(500).json({ error: "Kesalahan server saat menghapus token." });
+  }
+});
+
+router.post("/create", async (req, res) => {
+  try {
+    const { NIK, nama, password, role, dateIn, dateUp } = req.body;
+
+    // Cek apakah NIK sudah digunakan
+    const existingUser = await users.findOne({ NIK });
+    if (existingUser) {
+      return res.status(500).json({
+        message: "NIK sudah digunakan. Silakan gunakan NIK lain.",
+      });
+    }
+
+    // Proses hashing password
+    const salt = await bcrypt.genSalt(10);  
+    const hashedPassword = await bcrypt.hash(password, salt);  
+
+    // Buat pengguna baru
+    const newUser = new users({
+      NIK,
+      nama,
+      password: hashedPassword,
+      role,
+      dateIn,
+      dateUp,
+    });
+
+    const savedUser = await newUser.save();
+    res.status(201).json({
+      message: "User berhasil dibuat.",
+      data: savedUser,
+    });
+  } catch (error) {
+    console.error("Gagal membuat user:", error);
+    res.status(500).json({ error: "Terjadi kesalahan server." });
+  }
+});
+
+
+
+// READ (Get all users)
+router.get("/", async (req, res) => {
+  try {
+    const usersList = await users.find().select("NIK nama role");
+    res.status(200).json(usersList);
+  } catch (error) {
+    console.error("Gagal mendapatkan data users:", error);
+    res.status(500).json({ error: "Terjadi kesalahan server." });
+  }
+});
+
+// READ (Get a user by NIK)
+router.get("/:NIK", async (req, res) => {
+  try {
+    const user = await users.findOne({ NIK: req.params.NIK });
+    if (!user) {
+      return res.status(404).json({ message: "User tidak ditemukan." });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Gagal mendapatkan data user:", error);
+    res.status(500).json({ error: "Terjadi kesalahan server." });
+  }
+});
+
+// UPDATE (Update user by NIK)
+router.put("/:_id", async (req, res) => {
+  try {
+    const { NIK, nama, password, role, dateIn, dateUp } = req.body;
+
+    const updatedUser = await users.findOneAndUpdate(
+      { _id: req.params._id },
+      { NIK, nama, password, role, dateIn, dateUp },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User tidak ditemukan." });
+    }
+
+    res.status(200).json({
+      message: "User berhasil diperbarui.",
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error("Gagal memperbarui data user:", error);
+    res.status(500).json({ error: "Terjadi kesalahan server." });
+  }
+});
+
+// DELETE (Delete user by NIK)
+router.delete("/:_id", async (req, res) => {
+  try {
+    const deletedUser = await users.findOneAndDelete({ _id: req.params._id });
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User tidak ditemukan." });
+    }
+    res.status(200).json({ message: "User berhasil dihapus." });
+  } catch (error) {
+    console.error("Gagal menghapus data user:", error);
+    res.status(500).json({ error: "Terjadi kesalahan server." });
   }
 });
 
