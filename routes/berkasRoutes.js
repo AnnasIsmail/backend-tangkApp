@@ -10,6 +10,7 @@ const JenisHak = require("../model/jenisHak");
 const PetugasUkur = require("../model/petugasUkur");
 const PetugasSPS = require("../model/petugasSPS");
 const Status = require('../model/status');
+const { getBerkasByRole } = require("../function/queryByRole");
 
 const dbFormatDate = "DD MMMM YYYY";
 const dbFormatDateTime = "YYYY-MM-DDTHH:mm:ss";
@@ -259,18 +260,6 @@ router.get("/petugasSPS", async (req, res) => {
   }
 });
 
-const roleStatusAccess = {
-  Admin: [],
-  PelaksanaEntri: ["Proses SPJ"],
-  PelaksanaSPJ: ["Proses SPJ"],
-  PelaksanaInventaris: ["Inventaris dan Distribusi", "Ukur Gambar", "Inventaris Berkas"],
-  PelaksanaKoordinator: ["Periksa Hasil PU", "QC Pemeriksa Koordinator"],
-  PelaksanaPemetaan: ["QC Bidang/Integrasi"],
-  PelaksanaPencetakan: ["Pencetakan/Validasi Sitata"],
-  Korsub: ["Approval SPJ Korsub", "Paraf Produk Berkas"],
-  Kasi: ["Approval SPJ Kasi", "TTD Produk Berkas", "Penyelesaian 307"],
-};
-
 router.post("/", async (req, res) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -285,37 +274,8 @@ router.post("/", async (req, res) => {
       return res.status(403).json({ message: "Anda tidak memiliki akses role tersebut" });
     }
 
-    let data;
-    if (role === "Admin") {
-      // Admin dapat melihat semua dokumen
-      data = await Berkas.find();
-    } else {
-      // Role lain hanya dapat melihat dokumen berdasarkan status terakhir
-      const allowedStatuses = roleStatusAccess[role];
-      if (!allowedStatuses) {
-        return res.status(403).json({ message: "Role tidak dikenali." });
-      }
-
-      const pipeline = [
-        // Ambil status terakhir dari array status
-        {
-          $addFields: {
-            lastStatus: {
-              $arrayElemAt: ["$status", -1], // Ambil elemen terakhir dari array status
-            },
-          },
-        },
-        {
-          $match: {
-            "lastStatus.name": { $in: allowedStatuses }, // Periksa apakah lastStatus.name sesuai role
-          },
-        },
-      ];
-
-      data = await Berkas.aggregate(pipeline);
-
-      // Debugging hasil akhir
-    }
+    // Dapatkan data berkas sesuai role
+    const data = await getBerkasByRole(role);
 
     // Kirim data ke frontend
     res.status(200).json(data);
