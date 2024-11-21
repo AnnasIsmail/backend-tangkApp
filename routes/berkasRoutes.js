@@ -388,7 +388,7 @@ router.delete('/:id', async (req, res) => {
 
 router.post('/updateStatus/:id/selesai', async (req, res) => {
   const { id } = req.params;
-  const { userIn, NIK, namaUser, notes } = req.body;
+  const { userIn, NIK, namaUser, notes, role, idPetugasUkur, namaPetugasUkur, statusBayarPNBP } = req.body;
 
   try {
     const berkas = await Berkas.findById(id);
@@ -434,6 +434,13 @@ router.post('/updateStatus/:id/selesai', async (req, res) => {
       });
     }
 
+    if(role === "PelaksanaSPJ"){
+      berkas.idPetugasUkur = idPetugasUkur;
+      berkas.namaPetugasUkur = namaPetugasUkur;
+      berkas.statusBayarPNBP =
+      typeof statusBayarPNBP === "boolean" ? statusBayarPNBP : berkas.statusBayarPNBP;
+    }
+
     await berkas.save();
     res.status(200).json({ message: "Status berhasil diperbarui ke 'Selesai'!", berkas });
   } catch (error) {
@@ -457,9 +464,9 @@ router.post('/updateStatus/:id/terhenti', async (req, res) => {
 
     // Ambil status terakhir
     const currentStatus = berkas.status[berkas.status.length - 1];
-    if (!currentStatus || currentStatus.subStatus !== "Berjalan") {
-      return res.status(400).json({ message: "Tidak ada status aktif yang berjalan!" });
-    }
+    // if (!currentStatus || currentStatus.subStatus !== "Berjalan") {
+    //   return res.status(400).json({ message: "Tidak ada status aktif yang berjalan!" });
+    // }
 
     // Tambahkan substatus "Terhenti" dengan kendala
     currentStatus.statusDetail.push({

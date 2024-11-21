@@ -134,10 +134,10 @@ router.post("/create", async (req, res) => {
         message: "NIK sudah digunakan. Silakan gunakan NIK lain.",
       });
     }
-
+    const combinedPassword = password + SECRET_CODE;
     // Proses hashing password
     const salt = await bcrypt.genSalt(10);  
-    const hashedPassword = await bcrypt.hash(password, salt);  
+    const hashedPassword = await bcrypt.hash(combinedPassword, salt);  
 
     // Buat pengguna baru
     const newUser = new users({
