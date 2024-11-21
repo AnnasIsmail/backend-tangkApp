@@ -41,9 +41,11 @@ router.post("/", async (req, res) => {
           return res.status(200).json({
             success: true,
             data: {
-              berjalan: 0,
-              selesai: 0,
-              terhenti: 0,
+              berkas:{
+                berjalan: 0,
+                selesai: 0,
+                terhenti: 0,
+              }
             },
           });
         }
@@ -70,9 +72,11 @@ router.post("/", async (req, res) => {
     
         // Format hasil menjadi objek dengan status "Berjalan", "Selesai", dan "Terhenti"
         const formattedResult = {
-          berjalan: results.find((item) => item.status === "Berjalan")?.count || 0,
-          selesai: results.find((item) => item.status === "Selesai")?.count || 0,
-          terhenti: results.find((item) => item.status === "Terhenti")?.count || 0,
+          berkas:{
+            berjalan: results.find((item) => item.status === "Berjalan")?.count || 0,
+            selesai: results.find((item) => item.status === "Selesai")?.count || 0,
+            terhenti: results.find((item) => item.status === "Terhenti")?.count || 0,
+          }
         };
     
         res.status(200).json({
