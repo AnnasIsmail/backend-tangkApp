@@ -126,6 +126,20 @@ router.post("/insert", async (req, res) => {
   }
 });
 
+router.get('/:_id', async (req, res) => {
+  const { _id } = req.params;
+
+  try {
+      const berkas = await Berkas.findById(_id);
+      if (!berkas) {
+          return res.status(404).json({ message: 'Berkas tidak ditemukan.' });
+      }
+      res.json(berkas);
+  } catch (error) {
+      res.status(500).json({ message: 'Terjadi kesalahan saat mengambil data.', error });
+  }
+});
+
 router.put("/update/:idBerkas", async (req, res) => {
   try {
     const { idBerkas } = req.params;
