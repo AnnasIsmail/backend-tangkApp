@@ -126,7 +126,7 @@ router.post("/insert", async (req, res) => {
   }
 });
 
-router.get('/:_id', async (req, res) => {
+router.get('/detail/:_id', async (req, res) => {
   const { _id } = req.params;
 
   try {
@@ -257,8 +257,10 @@ router.get("/jenisHak", async (req, res) => {
 });
 
 router.get("/petugasUkur", async (req, res) => {
+  console.log(0)
   try {
     const petugasUkurList = await PetugasUkur.find();
+    console.log(1)
     res.status(200).json(petugasUkurList);
   } catch (error) {
     res.status(500).json({ error: error.message });
