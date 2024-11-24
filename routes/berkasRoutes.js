@@ -11,6 +11,7 @@ const PetugasUkur = require("../model/petugasUkur");
 const PetugasSPS = require("../model/petugasSPS");
 const Status = require('../model/status');
 const { getBerkasByRole } = require("../function/queryByRole");
+const status = require("../model/status");
 
 const dbFormatDate = "DD MMMM YYYY";
 const dbFormatDateTime = "YYYY-MM-DDTHH:mm:ss";
@@ -69,6 +70,7 @@ router.post("/insert", async (req, res) => {
       idPemohon = savedPemohon._id.toString(); // Update idPemohon
     }
 
+    const statusAwal = await status.findOne({indexStatus: 0});
     // Buat instance baru
     const newBerkas = new Berkas({
       idBerkas,
@@ -97,7 +99,7 @@ router.post("/insert", async (req, res) => {
       PIC: PIC || [],
       status: [
       {
-        name: "Proses SPJ",
+        name: statusAwal.nama,
         subStatus: "Berjalan",
         dateIn: new Date().toISOString(),
         userIn: idUser,
@@ -123,20 +125,6 @@ router.post("/insert", async (req, res) => {
   } catch (error) {
     console.error("Gagal menyimpan data berkas:", error);
     res.status(500).json({ error: "Terjadi kesalahan server." });
-  }
-});
-
-router.get('/detail/:_id', async (req, res) => {
-  const { _id } = req.params;
-
-  try {
-      const berkas = await Berkas.findById(_id);
-      if (!berkas) {
-          return res.status(404).json({ message: 'Berkas tidak ditemukan.' });
-      }
-      res.json(berkas);
-  } catch (error) {
-      res.status(500).json({ message: 'Terjadi kesalahan saat mengambil data.', error });
   }
 });
 
@@ -257,10 +245,8 @@ router.get("/jenisHak", async (req, res) => {
 });
 
 router.get("/petugasUkur", async (req, res) => {
-  console.log(0)
   try {
     const petugasUkurList = await PetugasUkur.find();
-    console.log(1)
     res.status(200).json(petugasUkurList);
   } catch (error) {
     res.status(500).json({ error: error.message });

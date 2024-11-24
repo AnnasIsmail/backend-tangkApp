@@ -11,7 +11,7 @@ const users = mongoose.model("users", {
     type: String,
   },
   role: {
-    type: Array,
+    type: [],
   },
   dateIn: {
     type: String,

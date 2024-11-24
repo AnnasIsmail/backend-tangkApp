@@ -14,6 +14,7 @@ const berkasRoutes = require("./routes/berkasRoutes");
 const petugasUkurRoutes = require("./routes/petugasUkurRoutes");
 const petugasSPSRoutes = require("./routes/petugasSPSRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const rolesRoutes = require("./routes//rolesRoutes");
 // const VPSRoutes = require("./routes/VPS");
 // const lambdaRoutes = require("./routes/lambda");
 
@@ -107,3 +108,4 @@ app.use("/berkas", berkasRoutes);
 app.use("/petugas-ukur", petugasUkurRoutes);
 app.use("/petugas-sps", petugasSPSRoutes);
 app.use("/dashboard", dashboardRoutes);
+app.use("/roles", rolesRoutes);
